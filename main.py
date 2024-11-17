@@ -4,5 +4,5 @@ app = FastAPI()
 
 @app.get("/")
 async def main():
-    return {"Hello world!"}
+    return {"Hello CI world!"}
         
