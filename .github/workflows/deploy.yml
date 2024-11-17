@@ -6,12 +6,11 @@ on:
     workflows: ["python-app"]  # This is the name of the python-app workflow
     types:
       - completed  # Only trigger when the build workflow completes
-    # Only trigger when the python-app workflow completes successfully
-    condition: ${{ github.event.workflow_run.conclusion == 'success' }}
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
 
     steps:
       # Checkout the code from the repository
