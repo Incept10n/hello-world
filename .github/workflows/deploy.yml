@@ -3,9 +3,11 @@ name: Deploy
 
 on:
   workflow_run:
-    workflows: ["python-app"]  # This is the name of the CI workflow
+    workflows: ["python-app"]  # This is the name of the python-app workflow
     types:
       - completed  # Only trigger when the build workflow completes
+    # Only trigger when the python-app workflow completes successfully
+    condition: ${{ github.event.workflow_run.conclusion == 'success' }}
 
 jobs:
   deploy:
