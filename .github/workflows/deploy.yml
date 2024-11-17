@@ -1,0 +1,35 @@
+# .github/workflows/deploy.yml
+name: Deploy
+
+on:
+  workflow_run:
+    workflows: ["python-app"]  # This is the name of the CI workflow
+    types:
+      - completed  # Only trigger when the build workflow completes
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the code from the repository
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: install ssh keys
+        run: |
+          install -m 600 -D /dev/null ~/.ssh/id_rsa
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.SSH_HOST }} > ~/.ssh/known_hosts
+
+      - name: connect
+        run: ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} 
+
+      - name: Pull Docker image and run container
+        run: |
+          docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}  # Login to Docker Hub
+          docker pull ${{ secrets.DOCKER_IMAGE }}  # Pull the image from Docker Hub
+          docker run -d --name fastapi-app -p 8000:8000 ${{ secrets.DOCKER_IMAGE }}  # Run the container (example with Nginx)
+      
+      - name: cleanup
+        run: rm -rf ~/.ssh
