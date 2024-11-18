@@ -27,9 +27,9 @@ jobs:
       - name: Install sshpass
         run: sudo apt-get install sshpass
 
-        - name: Connect via SSH with password
-          run: |
-            sshpass -p "${{ secrets.SSH_PASSWORD }}" ssh -o StrictHostKeyChecking=no -p 8888 ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}
+      - name: Connect via SSH with password
+        run: |
+          sshpass -p "${{ secrets.SSH_PASSWORD }}" ssh -o StrictHostKeyChecking=no -p 8888 ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}
 
       - name: Pull Docker image and run container
         run: |
