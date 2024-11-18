@@ -30,6 +30,9 @@ jobs:
             # Stop and remove the existing container if it exists
             sudo docker stop fastapi-app || true
             sudo docker rm fastapi-app || true
+
+            # Remove all existing Docker images
+            sudo docker rmi -f $(sudo docker images -q) || true  # Force remove all images, ignoring errors
             
             # Login to Docker Hub
             sudo docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}  # Login to Docker Hub
