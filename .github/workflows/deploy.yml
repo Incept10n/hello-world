@@ -27,9 +27,17 @@ jobs:
       - name: Install sshpass
         run: sudo apt-get install sshpass
 
-      - name: Connect via SSH with password
+      # - name: Connect via SSH with password
+      #   run: |
+      #     sshpass -p "${{ secrets.SSH_PASSWORD }}" ssh -o StrictHostKeyChecking=no -p 8888 ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}
+
+      - name: Connect via SSH with password and run Docker commands
         run: |
-          sshpass -p "${{ secrets.SSH_PASSWORD }}" ssh -o StrictHostKeyChecking=no -p 8888 ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}
+          sshpass -p "${{ secrets.SSH_PASSWORD }}" ssh -o StrictHostKeyChecking=no -p 8888 ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
+            sudo docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}  # Login to Docker Hub
+            sudo docker pull ${{ secrets.DOCKER_IMAGE }}  # Pull the image from Docker Hub
+            sudo docker run -d --name fastapi-app -p 8000:8000 ${{ secrets.DOCKER_IMAGE }}  # Run the container (example with Nginx)
+          EOF
 
       - name: Pull Docker image and run container
         run: |
