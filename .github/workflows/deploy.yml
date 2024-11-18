@@ -21,8 +21,15 @@ jobs:
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           ssh-keyscan -H -p 8888 ${{ secrets.SSH_HOST }} > ~/.ssh/known_hosts
 
-      - name: connect
-        run: ssh -p 8888 ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} 
+      # - name: connect
+      #   run: ssh -p 8888 ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} 
+
+      - name: Install sshpass
+        run: sudo apt-get install sshpass
+
+        - name: Connect via SSH with password
+          run: |
+            sshpass -p "${{ secrets.SSH_PASSWORD }}" ssh -o StrictHostKeyChecking=no -p 8888 ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}
 
       - name: Pull Docker image and run container
         run: |
