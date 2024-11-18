@@ -21,29 +21,25 @@ jobs:
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           ssh-keyscan -H -p 8888 ${{ secrets.SSH_HOST }} > ~/.ssh/known_hosts
 
-      # - name: connect
-      #   run: ssh -p 8888 ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} 
-
       - name: Install sshpass
         run: sudo apt-get install sshpass
-
-      # - name: Connect via SSH with password
-      #   run: |
-      #     sshpass -p "${{ secrets.SSH_PASSWORD }}" ssh -o StrictHostKeyChecking=no -p 8888 ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}
 
       - name: Connect via SSH with password and run Docker commands
         run: |
           sshpass -p "${{ secrets.SSH_PASSWORD }}" ssh -o StrictHostKeyChecking=no -p 8888 ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
+            # Stop and remove the existing container if it exists
+            sudo docker stop fastapi-app || true
+            sudo docker rm fastapi-app || true
+            
+            # Login to Docker Hub
             sudo docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}  # Login to Docker Hub
-            sudo docker pull ${{ secrets.DOCKER_IMAGE }}  # Pull the image from Docker Hub
-            sudo docker run -d --name fastapi-app -p 8000:8000 ${{ secrets.DOCKER_IMAGE }}  # Run the container (example with Nginx)
+            
+            # Pull the image from Docker Hub
+            sudo docker pull ${{ secrets.DOCKER_IMAGE }}  # Pull the image
+            
+            # Run the container with the new image
+            sudo docker run -d --name fastapi-app -p 8000:8000 ${{ secrets.DOCKER_IMAGE }}  # Run the container
           EOF
 
-      # - name: Pull Docker image and run container
-      #   run: |
-      #     docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}  # Login to Docker Hub
-      #     docker pull ${{ secrets.DOCKER_IMAGE }}  # Pull the image from Docker Hub
-      #     docker run -d --name fastapi-app -p 8000:8000 ${{ secrets.DOCKER_IMAGE }}  # Run the container (example with Nginx)
-      
       - name: cleanup
         run: rm -rf ~/.ssh
