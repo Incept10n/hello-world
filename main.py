@@ -3,6 +3,6 @@ from fastapi import FastAPI
 app = FastAPI()
 
 @app.get("/")
-async def main():
-    return {"Hello CI/CD world!"}
+async def hehe():
+    return {"message": "Hello world!"}
         
