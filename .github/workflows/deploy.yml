@@ -19,20 +19,20 @@ jobs:
         run: |
           sshpass -p "${{ secrets.SSH_PASSWORD }}" ssh -o StrictHostKeyChecking=no -p 7700 ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
             # Stop and remove the existing container if it exists
-            sudo docker stop fastapi-app || true
-            sudo docker rm fastapi-app || true
+            docker stop fastapi-app || true
+            docker rm fastapi-app || true
 
             # Remove all existing Docker images
-            sudo docker rmi -f $(sudo docker images -q) || true  # Force remove all images, ignoring errors
+            docker rmi -f $(sudo docker images -q) || true  # Force remove all images, ignoring errors
             
             # Login to Docker Hub
-            sudo docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}  # Login to Docker Hub
+            docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}  # Login to Docker Hub
             
             # Pull the image from Docker Hub
-            sudo docker pull ${{ secrets.DOCKER_IMAGE }}  # Pull the image
+            docker pull ${{ secrets.DOCKER_IMAGE }}  # Pull the image
             
             # Run the container with the new image
-            sudo docker run -d --name fastapi-app -p 8000:8000 ${{ secrets.DOCKER_IMAGE }}  # Run the container
+            docker run -d --name fastapi-app -p 8000:8000 ${{ secrets.DOCKER_IMAGE }}  # Run the container
           EOF
 
       - name: cleanup
