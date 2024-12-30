@@ -1,0 +1,9 @@
+# Envs and cache
+.venv
+__pycache__
+
+
+# Special dirs
+Ansible
+.github
+.gitignore
