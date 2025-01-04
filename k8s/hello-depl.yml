@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  hello-depl
+  labels:
+    app:  hello-depl
+spec:
+  selector:
+    matchLabels:
+      app: hello-depl
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app:  hello-depl
+    spec:
+      containers:
+      - name:  hello-depl
+        image: incept1on999/hello-world:latest
+        ports:
+        - containerPort:  8000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hello-service
+spec:
+  selector:
+    app: hello-depl
+  type: ClusterIP
+  ports:
+  - name: hello-service
+    protocol: TCP
+    port: 8000
+    targetPort: 8000 
